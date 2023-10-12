@@ -36,7 +36,7 @@ app.use(
 // app.use(cors('*'));
 app.use(
   cors({
-    origin: 'http://localhost:5174',
+    origin: 'https://ecommercefrontend-bhvl.onrender.com/',
     methods: 'GET, POST, PUT, DELETE',
     credentials: true,
   })
