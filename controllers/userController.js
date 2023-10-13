@@ -40,7 +40,7 @@ const createUser = async (req, res, next) => {
     await token.save();
 
     // send mail
-    const link = `${process.env.BASE_URL}users/${user._id}/confirm/${token.token}`;
+    const link = `${process.env.BASE_URL}/users/${user._id}/confirm/${token.token}`;
     // const link = `http://localhost:5174/${user._id}/confirm/${token.token}`;
     // const link = `http://localhost:5174/api/users/${user._id}/confirm/${token.token}`;
     // const link = `http://localhost:3030/api/users/${user._id}/confirm/${token.token}`;
@@ -132,7 +132,7 @@ const userLogin = async (req, res, next) => {
         });
         await token.save();
 
-        const link = `${process.env.BASE_URL}users/${user._id}/confirm/${token.token}`;
+        const link = `${process.env.BASE_URL}/users/${user._id}/confirm/${token.token}`;
 
         // const link = `http://localhost:3030/api/users/${user._id}/confirm/${token.token}`;
         await verifyEmail(user.email, link);
@@ -237,7 +237,7 @@ const forgotPassword = async (req, res, next) => {
       await user.save();
 
       // password reset link to be sent to user
-      const link = `${process.env.BASE_URL}reset-password/${user._id}/${token}`;
+      const link = `${process.env.BASE_URL}/reset-password/${user._id}/${token}`;
 
       passwordReset(user.email, link);
       res.json({
