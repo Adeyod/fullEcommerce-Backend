@@ -1,6 +1,7 @@
 import express from 'express';
 import upload from '../utils/multer.js';
 import cloudinary from '../utils/cloudinary.js';
+import cron from 'node-cron';
 import {
   getAllProducts,
   getProductById,
@@ -10,6 +11,11 @@ import {
 } from '../controllers/productController.js';
 
 const router = express.Router();
+
+cron.schedule('*/5 * * * *', (getAllProducts) => {
+  getAllProducts;
+  console.log('Products');
+});
 
 router.get('/', getAllProducts);
 router.get('/getProductById/:id', getProductById);

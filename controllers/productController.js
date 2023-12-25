@@ -2,6 +2,26 @@ import errorHandler from '../middlewares/errorHandler.js';
 import Product from '../models/productModel.js';
 import cloudinary from '../utils/cloudinary.js';
 import upload from '../utils/multer.js';
+import cron from 'node-cron';
+
+cron.schedule('0 * * * *', async (req, res) => {
+  console.log('API is running');
+  try {
+    // const response = await fetch('http://localhost:3030/api/products');
+    const response = await fetch(
+      'https://fullecommerce-backend.onrender.com/api/products'
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`Backend API call successful: ${JSON.stringify(data)}`);
+    } else {
+      console.error(`Unexpected status code: ${(await response).status}`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 const getAllProducts = async (req, res) => {
   try {
@@ -19,6 +39,7 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
+
 const getProductById = async (req, res, next) => {
   const id = req.params.id;
 
@@ -34,6 +55,7 @@ const getProductById = async (req, res, next) => {
     // next(error, 'Incorrect id');
   }
 };
+
 const addProduct = async (req, res) => {
   const { formData, images } = req.body;
   const {
@@ -67,20 +89,73 @@ const addProduct = async (req, res) => {
       stock,
       images,
     });
+    if (!title || !category || !brand || !description || !price || !stock) {
+      return res.json({
+        message: 'All fields are required',
+        success: false,
+        status: 401,
+      });
+    }
+
+    const trimmedTitle = title.trim();
+    const trimmedBrand = brand.trim();
+    const trimmedPrice = price.trim();
+    const trimmedStock = stock.trim();
+    const trimmedDescription = description.trim();
+
+    // check the fields to prevent input of unwanted characters
+    if (!/^[a-zA-Z0-9 -]+$/.test(trimmedTitle)) {
+      return res.json({
+        message: 'Invalid input for title...',
+        status: 400,
+        success: false,
+      });
+    }
+
+    if (!/^[a-zA-Z0-9 -]+$/.test(trimmedBrand)) {
+      return res.json({
+        message: 'Invalid input for brand...',
+        status: 400,
+        success: false,
+      });
+    }
+
+    if (!/^[a-zA-Z0-9 -]+$/.test(trimmedPrice)) {
+      return res.json({
+        message: 'Invalid input for Price...',
+        status: 400,
+        success: false,
+      });
+    }
+
+    if (!/^[a-zA-Z0-9 -]+$/.test(trimmedStock)) {
+      return res.json({
+        message: 'Invalid input for stock...',
+        status: 400,
+        success: false,
+      });
+    }
+
+    if (!/^[a-zA-Z0-9 -]+$/.test(trimmedDescription)) {
+      return res.json({
+        message: 'Invalid input for description...',
+        status: 400,
+        success: false,
+      });
+    }
+
     const product = await newProduct.save();
-    // console.log('product:', product);
     res.json({
       product,
       message: 'Product created successfully',
       status: 200,
     });
     return;
-    // }
-    // }
   } catch (error) {
     console.log(error);
   }
 };
+
 const editProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body);
@@ -95,6 +170,7 @@ const editProduct = async (req, res, next) => {
     return;
   }
 };
+
 const deleteProductById = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
