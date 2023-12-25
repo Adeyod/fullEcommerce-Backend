@@ -171,6 +171,7 @@ const editProduct = async (req, res, next) => {
   }
 };
 
+// delete logic
 const deleteProductById = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
